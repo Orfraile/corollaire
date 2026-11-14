@@ -1,0 +1,21 @@
+# ============================================================
+#  L'écho caché de la page « Mentions légales »
+#  Quand on reste un moment sur le paragraphe « Propriété intellectuelle »,
+#  l'une de ces lignes apparaît discrètement dessous.
+#  Ce sont des allusions à « La Maison des Feuilles » (Mark Z. Danielewski),
+#  écrites avec des mots à moi. Le mot « maison » s'affiche toujours en bleu,
+#  comme dans le livre.
+#
+#  Tu peux ajouter ou modifier des lignes. Garde-les COURTES : recopier de
+#  longs passages d'un livre protégé n'est pas permis.
+#  Les lignes qui commencent par # sont ignorées.
+# ============================================================
+
+Dedans, c'est un peu plus grand que dehors.
+Le couloir n'était pas là hier.
+Quelque chose gronde, très bas, derrière le mur.
+Mesurez encore une fois. Les chiffres ont changé.
+Les notes de bas de page n'attendent personne.
+Il y a une porte dans ce mur. Il n'y en avait pas.
+Vous êtes bien dans la maison. Elle, elle le sait déjà.
+Ici, le mot maison est toujours bleu.

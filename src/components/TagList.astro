@@ -1,0 +1,18 @@
+---
+import { url } from '../lib/url';
+import { slugify } from '../lib/tags';
+
+const { tags } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <ul class="tags" aria-label="Tags">
+      {tags.map((t) => (
+        <li>
+          <a href={url(`/tags/${slugify(t)}/`)}>{t}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}

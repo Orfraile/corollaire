@@ -1,16 +1,14 @@
 ---
+import Base from '../layouts/Base.astro';
+import ListeArticles from '../components/ListeArticles.astro';
+import { getArticles } from '../lib/articles';
+import { ARTICLES_PAR_PAGE } from '../lib/config';
+
+const tous = await getArticles();
+const totalPages = Math.max(1, Math.ceil(tous.length / ARTICLES_PAR_PAGE));
+const articles = tous.slice(0, ARTICLES_PAR_PAGE);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+  <ListeArticles articles={articles} pageCourante={1} totalPages={totalPages} />
+</Base>

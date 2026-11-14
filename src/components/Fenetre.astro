@@ -1,0 +1,19 @@
+---
+// Une « fenêtre » : barre de titre bleu paon + contenu.
+// heading = false : la barre de titre n'est alors pas un titre de section.
+const { titre, heading = true, class: classe = '' } = Astro.props;
+---
+
+<section class:list={['fenetre', classe]}>
+  <div class="fenetre-barre">
+    {heading ? <h2 class="fenetre-nom">{titre}</h2> : <div class="fenetre-nom">{titre}</div>}
+    <span class="fenetre-boutons" aria-hidden="true">
+      <i><svg viewBox="0 0 19 13" width="19" height="13" fill="currentColor" shape-rendering="crispEdges" focusable="false"><path d="M8 0h10v1h-10zM5 1h12v1h-12zM3 2h4v1h-4zM9 2h6v1h-6zM2 3h3v1h-3zM6 3h7v1h-7zM1 4h9v1h-9zM0 5h8v1h-8zM10 5h5v1h-5zM0 6h12v1h-12zM0 7h9v1h-9zM0 8h7v1h-7zM9 8h5v1h-5zM0 9h11v1h-11zM0 10h10v1h-10zM0 11h9v1h-9zM0 12h5v1h-5z"/></svg></i>
+      <i><svg viewBox="0 0 17 13" width="17" height="13" fill="currentColor" shape-rendering="crispEdges" focusable="false"><path d="M4 1h9v1h-9zM2 2h2v1h-2zM13 2h2v1h-2zM1 6h2v1h-2zM14 6h2v1h-2zM1 7h4v1h-4zM12 7h4v1h-4zM0 8h1v1h-1zM3 8h11v1h-11zM16 8h1v1h-1zM3 9h1v1h-1zM5 9h7v1h-7zM13 9h1v1h-1zM5 10h1v1h-1zM8 10h1v1h-1zM11 10h1v1h-1zM8 11h1v1h-1z"/></svg></i>
+      <i><svg viewBox="0 0 17 18" width="17" height="18" fill="currentColor" shape-rendering="crispEdges" focusable="false"><path d="M8 1h1v1h-1zM7 2h3v1h-3zM7 3h3v1h-3zM7 4h1v1h-1zM9 4h2v1h-2zM4 5h4v1h-4zM9 5h4v1h-4zM1 6h7v1h-7zM9 6h7v1h-7zM2 7h6v1h-6zM9 7h6v1h-6zM3 8h5v1h-5zM9 8h5v1h-5zM3 9h5v1h-5zM9 9h5v1h-5zM3 10h5v1h-5zM9 10h5v1h-5zM2 11h13v1h-13zM4 12h9v1h-9zM8 13h1v1h-1zM8 14h1v1h-1zM8 15h1v1h-1zM8 16h3v1h-3zM8 17h2v1h-2z"/></svg></i>
+    </span>
+  </div>
+  <div class="fenetre-corps">
+    <slot />
+  </div>
+</section>

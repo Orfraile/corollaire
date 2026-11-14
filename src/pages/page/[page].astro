@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import ListeArticles from '../../components/ListeArticles.astro';
+import { getArticles } from '../../lib/articles';
+import { ARTICLES_PAR_PAGE } from '../../lib/config';
+
+// Les pages 2, 3, 4… de l'accueil (la page 1, c'est l'accueil lui-même).
+export async function getStaticPaths() {
+  const tous = await getArticles();
+  const totalPages = Math.ceil(tous.length / ARTICLES_PAR_PAGE);
+  const pages = [];
+  for (let n = 2; n <= totalPages; n++) {
+    pages.push({
+      params: { page: String(n) },
+      props: {
+        pageCourante: n,
+        totalPages,
+        articles: tous.slice((n - 1) * ARTICLES_PAR_PAGE, n * ARTICLES_PAR_PAGE),
+      },
+    });
+  }
+  return pages;
+}
+
+const { pageCourante, totalPages, articles } = Astro.props;
+---
+
+<Base titre={`Page ${pageCourante}`}>
+  <ListeArticles articles={articles} pageCourante={pageCourante} totalPages={totalPages} />
+</Base>

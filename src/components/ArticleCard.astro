@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import { typeLabels, formatDate } from '../lib/articles';
+import { url } from '../lib/url';
+import TagList from './TagList.astro';
+
+const { article } = Astro.props;
+const d = article.data;
+const lien = url(`/articles/${article.id}/`);
+---
+
+<article class="carte">
+  {
+    d.couverture && (
+      <a href={lien} class="carte-image" tabindex="-1" aria-hidden="true">
+        <Image src={d.couverture} alt="" width={480} />
+      </a>
+    )
+  }
+  <div class="carte-texte">
+    <h2><a href={lien}>{d.titre}</a></h2>
+    <p class="meta">{formatDate(d.date)} · {typeLabels[d.type]}</p>
+    <p>{d.resume}</p>
+    <TagList tags={d.tags} />
+  </div>
+</article>

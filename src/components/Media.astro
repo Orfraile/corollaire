@@ -1,0 +1,57 @@
+---
+// Un lecteur (vidéo, musique, playlist) : rien ne se charge avant le clic du visiteur.
+import Fenetre from './Fenetre.astro';
+import { analyserLien } from '../lib/media';
+
+const { url } = Astro.props;
+const m = analyserLien(url);
+const reglage = m.ratio ? `--ratio: ${m.ratio};` : `--hauteur: ${m.hauteur ?? 152}px;`;
+---
+
+{
+  m.embed ? (
+    <div class="media" data-embed={m.embed} data-autoplay={m.autoplay ? '1' : '0'} data-titre={`Lecteur ${m.fournisseur}`}>
+      <Fenetre titre={m.fournisseur} heading={false}>
+        <div class="media-zone" style={reglage}>
+          <button type="button" class="media-lancer">▶ Charger le lecteur {m.fournisseur}</button>
+        </div>
+        <p class="media-note">
+          Le lecteur vient de {m.fournisseur} : il ne se charge qu'après votre clic, et la plateforme peut alors déposer
+          des cookies. <a href={m.lien} rel="noopener noreferrer">Ouvrir sur {m.fournisseur}</a>
+        </p>
+      </Fenetre>
+    </div>
+  ) : (
+    <div class="media">
+      <Fenetre titre={m.fournisseur} heading={false}>
+        <p class="media-note">
+          {m.aideBandcamp
+            ? "Ce lien Bandcamp ne peut pas s'intégrer tel quel (Bandcamp demande un lien « Intégrer »). "
+            : "Ce lien ne peut pas s'intégrer. "}
+          <a href={m.lien} rel="noopener noreferrer">Ouvrir le lien</a>
+        </p>
+      </Fenetre>
+    </div>
+  )
+}
+
+<script>
+  document.addEventListener('click', (e) => {
+    const bouton = (e.target as HTMLElement).closest('.media-lancer');
+    if (!bouton) return;
+    const racine = bouton.closest<HTMLElement>('.media');
+    const zone = bouton.closest<HTMLElement>('.media-zone');
+    if (!racine || !zone || !racine.dataset.embed) return;
+
+    let adresse = racine.dataset.embed;
+    if (racine.dataset.autoplay === '1') adresse += (adresse.includes('?') ? '&' : '?') + 'autoplay=1';
+
+    const cadre = document.createElement('iframe');
+    cadre.src = adresse;
+    cadre.title = racine.dataset.titre || 'Lecteur';
+    cadre.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+    cadre.setAttribute('allowfullscreen', '');
+    cadre.referrerPolicy = 'strict-origin-when-cross-origin';
+    zone.replaceChildren(cadre);
+  });
+</script>

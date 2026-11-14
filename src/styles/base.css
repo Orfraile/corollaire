@@ -1,0 +1,170 @@
+/* Mise en page de base : sobre et lisible.
+   Le décor (Y2K, dreamcore) viendra à l'étape 7, par-dessus. */
+
+:root {
+  --fond: #f6f4ee;
+  --ciel: #dfe9f4;
+  --herbe: #9db88a;
+  --gris: #d9d6cf;
+  --texte: #222222;
+  --paon: #0b6e7f;
+  --pervenche: #4a5fa8;
+  --police: Tahoma, 'Segoe UI', Verdana, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+a { color: var(--paon); }
+a:hover { color: var(--pervenche); }
+:focus-visible { outline: 3px solid var(--pervenche); outline-offset: 2px; }
+
+img { max-width: 100%; height: auto; }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--paon);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  z-index: 10;
+}
+.skip:focus { left: 0; }
+
+/* En-tête */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--gris);
+}
+.site-title {
+  font-size: 1.7rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+.site-auteur { margin-left: 0.5rem; color: #555; }
+
+.menu-toggle {
+  display: none;
+  font: inherit;
+  padding: 0.4rem 0.9rem;
+  background: var(--gris);
+  border: 2px solid;
+  border-color: #fff #777 #777 #fff;
+  cursor: pointer;
+}
+
+/* Mise en page à deux colonnes */
+.layout {
+  display: grid;
+  grid-template-columns: 17rem minmax(0, 1fr);
+  gap: 2.5rem;
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+main { max-width: 42rem; }
+
+/* Colonne latérale */
+.sidebar h2 { font-size: 1.1rem; margin: 0 0 0.5rem; }
+.sidebar ul { list-style: none; margin: 0; padding: 0; }
+.sidebar ul ul { margin-left: 1rem; }
+.sidebar summary { cursor: pointer; padding: 0.15rem 0; }
+.sidebar summary.mois { text-transform: capitalize; }
+.sidebar li li li { line-height: 1.35; padding: 0.2rem 0; }
+.sidebar a[aria-current='page'] { font-weight: bold; color: var(--texte); }
+.menu-lateral { margin-top: 1.5rem; }
+.compte { color: #555; font-size: 0.9em; }
+
+/* Cartes d'articles */
+.carte {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 1.25rem;
+  margin: 0 0 2.25rem;
+}
+.carte:not(:has(.carte-image)) { grid-template-columns: 1fr; }
+.carte h2 { font-size: 1.35rem; line-height: 1.25; margin: 0 0 0.25rem; text-align: left; }
+.carte p { margin: 0.25rem 0; }
+.meta { color: #555; font-size: 0.95rem; }
+
+/* Tags */
+.tags, .nuage-tags { list-style: none; margin: 0.5rem 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tags a, .nuage-tags a {
+  display: inline-block;
+  padding: 0.05rem 0.6rem;
+  background: var(--ciel);
+  border: 1px solid var(--gris);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.nuage-tags li { font-size: 1.05rem; }
+
+/* Pagination */
+.pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 2rem; }
+.pagination ul { list-style: none; display: flex; gap: 0.4rem; margin: 0; padding: 0; }
+.pagination a[aria-current='page'] { font-weight: bold; color: var(--texte); text-decoration: none; }
+
+/* Article */
+h1 { font-size: 2rem; line-height: 1.2; text-align: left; margin: 0 0 0.5rem; }
+.texte { margin-top: 1.5rem; }
+.texte h2 { margin-top: 2rem; }
+blockquote { margin: 1rem 0; padding-left: 1rem; border-left: 4px solid var(--herbe); }
+.galerie { display: grid; gap: 1.5rem; margin-top: 2rem; }
+figure { margin: 0; }
+figcaption { color: #555; font-size: 0.95rem; }
+
+/* Pied de page */
+.site-footer {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-top: 1px solid var(--gris);
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Téléphone et petite tablette */
+@media (max-width: 52rem) {
+  .layout { grid-template-columns: 1fr; gap: 1rem; }
+  .js .menu-toggle { display: inline-block; }
+  .js .sidebar { display: none; }
+  .js .sidebar.is-open { display: block; padding: 0.75rem; background: #fff; border: 1px solid var(--gris); }
+  .carte { grid-template-columns: 1fr; }
+}
+
+
+/* ---------- Étape 6 : menus, recherche, pages ---------- */
+
+
+.menu-pied { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-bottom: 0.75rem; }
+
+.liste-archives { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+.liste-archives li { padding: 0.2rem 0; }
+.liste-archives .compte { display: inline-block; min-width: 6.5rem; font-variant-numeric: tabular-nums; }
+
+/* Recherche (Pagefind) aux couleurs du blog */
+#recherche {
+  --pagefind-ui-scale: 1;
+  --pagefind-ui-primary: var(--paon);
+  --pagefind-ui-text: var(--texte);
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-border: #8c8a84;
+  --pagefind-ui-tag: var(--ciel);
+  --pagefind-ui-border-width: 2px;
+  --pagefind-ui-border-radius: 0;
+  --pagefind-ui-font: var(--police);
+}
+

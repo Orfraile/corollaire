@@ -1,0 +1,94 @@
+---
+// Galerie de photos : vignettes, et agrandissement au clic dans une visionneuse.
+import { Image, getImage } from 'astro:assets';
+
+const { photos } = Astro.props;
+const grandes = await Promise.all(photos.map((p) => getImage({ src: p.fichier, width: 1800, format: 'webp' })));
+---
+
+<div class="galerie-photos">
+  <ul class="vignettes">
+    {
+      photos.map((p, i) => (
+        <li>
+          <button
+            type="button"
+            class="vignette"
+            data-grand={grandes[i].src}
+            data-legende={p.legende ?? ''}
+            data-alt={p.alt ?? p.legende ?? ''}
+            aria-label={`Agrandir la photo ${i + 1}${p.legende ? ' : ' + p.legende : ''}`}
+          >
+            <Image src={p.fichier} alt={p.alt ?? p.legende ?? ''} width={640} />
+          </button>
+          {p.legende && <p class="vignette-legende">{p.legende}</p>}
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="visionneuse" aria-label="Visionneuse de photos">
+    <div class="fenetre">
+      <div class="fenetre-barre">
+        <p class="fenetre-nom visionneuse-compteur"></p>
+        <button type="button" class="bouton visionneuse-fermer">Fermer</button>
+      </div>
+      <div class="fenetre-corps">
+        <figure class="visionneuse-figure">
+          <img class="visionneuse-image" alt="" />
+          <figcaption class="visionneuse-legende"></figcaption>
+        </figure>
+        <div class="visionneuse-nav">
+          <button type="button" class="bouton visionneuse-prec">← Précédente</button>
+          <button type="button" class="bouton visionneuse-suiv">Suivante →</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.galerie-photos').forEach((racine) => {
+    const vignettes = Array.from(racine.querySelectorAll<HTMLButtonElement>('.vignette'));
+    const fenetre = racine.querySelector<HTMLDialogElement>('dialog.visionneuse');
+    if (!fenetre || vignettes.length === 0) return;
+    const image = fenetre.querySelector<HTMLImageElement>('.visionneuse-image')!;
+    const legende = fenetre.querySelector<HTMLElement>('.visionneuse-legende')!;
+    const compteur = fenetre.querySelector<HTMLElement>('.visionneuse-compteur')!;
+    let courant = 0;
+
+    function afficher(i: number) {
+      courant = (i + vignettes.length) % vignettes.length;
+      const v = vignettes[courant];
+      image.src = v.dataset.grand || '';
+      image.alt = v.dataset.alt || '';
+      legende.textContent = v.dataset.legende || '';
+      legende.hidden = !v.dataset.legende;
+      compteur.textContent = `Photo ${courant + 1} / ${vignettes.length}`;
+      // précharge la suivante
+      const suivante = vignettes[(courant + 1) % vignettes.length].dataset.grand;
+      if (suivante) new Image().src = suivante;
+    }
+
+    vignettes.forEach((v, i) =>
+      v.addEventListener('click', () => {
+        afficher(i);
+        fenetre.showModal();
+      })
+    );
+    fenetre.querySelector('.visionneuse-fermer')?.addEventListener('click', () => fenetre.close());
+    fenetre.querySelector('.visionneuse-prec')?.addEventListener('click', () => afficher(courant - 1));
+    fenetre.querySelector('.visionneuse-suiv')?.addEventListener('click', () => afficher(courant + 1));
+    fenetre.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') afficher(courant - 1);
+      if (e.key === 'ArrowRight') afficher(courant + 1);
+    });
+    // un clic à côté de la fenêtre ferme la visionneuse
+    fenetre.addEventListener('click', (e) => {
+      if (e.target === fenetre) fenetre.close();
+    });
+    fenetre.addEventListener('close', () => {
+      image.removeAttribute('src');
+    });
+  });
+</script>

@@ -1,0 +1,186 @@
+---
+import '@fontsource/jersey-15/400.css';
+import '../styles/base.css';
+import '../styles/theme.css';
+import ciel from '../assets/ciel.webp';
+import Archives from '../components/Archives.astro';
+import Fenetre from '../components/Fenetre.astro';
+import Bouton88 from '../components/Bouton88.astro';
+import phrasesBrut from '../data/phrases.txt?raw';
+import { getArticles } from '../lib/articles';
+import { SITE, MESSAGE_DEFILANT } from '../lib/config';
+import { url } from '../lib/url';
+
+interface Props {
+  titre?: string;
+  description?: string;
+  currentId?: string;
+  barreTitre?: string;
+  classePage?: string;
+}
+const { titre, description = SITE.description, currentId, barreTitre, classePage } = Astro.props;
+const articles = await getArticles();
+const titreComplet = titre ? `${titre} — ${SITE.nom}` : SITE.nom;
+
+// Les phrases cachées : une par ligne dans src/data/phrases.txt
+const phrases = phrasesBrut
+  .split(/\r?\n/)
+  .map((l) => l.trim())
+  .filter((l) => l && !l.startsWith('#'));
+const phrasesJson = JSON.stringify(phrases).replace(/</g, '\\u003c');
+
+const chemin = Astro.url.pathname;
+const courant = (p: string) => (chemin === url(p) ? 'page' : undefined);
+const annee = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titreComplet}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.nom} href={url('/rss.xml')} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body style={`--image-ciel: url("${ciel.src}")`}>
+    <a class="skip" href="#contenu">Aller au contenu</a>
+
+    <header class="site-header">
+      <div class="marque">
+        <a class="site-title" href={url('/')}>{SITE.nom}</a>
+        <button class="etoile" id="etoile" type="button" aria-label="Révéler une phrase cachée">✦</button>
+        <span class="site-auteur">par {SITE.auteur}</span>
+      </div>
+      <p id="phrase-cachee" class="phrase-cachee" role="status" hidden></p>
+    </header>
+
+    <nav class="menu-principal" aria-label="Menu principal">
+      <a href={url('/')} aria-current={courant('/')}>Accueil</a>
+      <a href={url('/recherche/')} aria-current={courant('/recherche/')}>Recherche</a>
+      <a href={url('/a-propos/')} aria-current={courant('/a-propos/')}>À propos</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sommaire">
+        Sommaire
+      </button>
+    </nav>
+
+    {
+      MESSAGE_DEFILANT && (
+        <div class="ticker" role="region" aria-label="Message défilant">
+          <button type="button" class="ticker-pause" aria-pressed="false" aria-label="Mettre en pause le texte défilant">
+            ❚❚
+          </button>
+          <div class="ticker-piste">
+            <p class="ticker-texte">{MESSAGE_DEFILANT}</p>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="layout">
+      <aside id="sommaire" class="sidebar" aria-label="Sommaire">
+        <Fenetre titre="Archives">
+          <Archives articles={articles} currentId={currentId} />
+        </Fenetre>
+        <Fenetre titre="Navigation">
+          <nav class="navigation-lateral" aria-label="Navigation">
+            <ul>
+              <li><a href={url('/')}>Accueil</a></li>
+              <li><a href={url('/tags/')}>Tous les tags</a></li>
+              <li><a href={url('/recherche/')}>Recherche</a></li>
+            </ul>
+          </nav>
+        </Fenetre>
+      </aside>
+
+      <main id="contenu">
+        <Fenetre titre={barreTitre ?? titre ?? SITE.nom} heading={false} class={['fenetre-principale', classePage]}>
+          <slot />
+        </Fenetre>
+      </main>
+    </div>
+
+    <footer class="site-footer">
+      <Fenetre titre="Corollaire.exe" heading={false}>
+        <nav class="menu-pied" aria-label="Pied de page">
+          <a href={url('/archives/')}>Archives</a>
+          <a href={url('/recherche/')}>Recherche</a>
+          <a href={url('/tags/')}>Tags</a>
+          <a href={url('/a-propos/')}>À propos</a>
+          <a href={url('/contact/')}>Contact</a>
+          <a href={url('/mentions-legales/')}>Mentions légales</a>
+          <a href={url('/rss.xml')}>Flux RSS</a>
+        </nav>
+        <div class="boutons-88">
+          <Bouton88 href={url('/rss.xml')} haut="RSS" bas="s'abonner" teinte="paon" />
+          <Bouton88 haut="Corollaire" bas="déploiement" teinte="pervenche" curseur="fleur" />
+          <Bouton88 haut="Blog propulsé" bas="par l'IA" teinte="lavande" uniforme />
+        </div>
+        <div class="barre-etat">
+          <p id="phrase-pied" class="phrase">{phrases[0] ?? ''}</p>
+          <p>© {annee} {SITE.auteur}</p>
+        </div>
+      </Fenetre>
+    </footer>
+
+    <script id="phrases-data" type="application/json" is:inline set:html={phrasesJson} />
+
+    <script>
+      // Menu « Sommaire » sur téléphone
+      const bouton = document.querySelector('.menu-toggle');
+      const sommaire = document.getElementById('sommaire');
+      bouton?.addEventListener('click', () => {
+        const ouvert = sommaire?.classList.toggle('is-open') ?? false;
+        bouton.setAttribute('aria-expanded', String(ouvert));
+      });
+
+      // Phrases cachées
+      let phrases: string[] = [];
+      try {
+        phrases = JSON.parse(document.getElementById('phrases-data')?.textContent || '[]');
+      } catch (e) {}
+      const tirer = (exclue: string) => {
+        if (phrases.length === 0) return '';
+        let p = '';
+        do {
+          p = phrases[Math.floor(Math.random() * phrases.length)];
+        } while (phrases.length > 1 && p === exclue);
+        return p;
+      };
+
+      const pied = document.getElementById('phrase-pied');
+      if (pied && phrases.length > 0) pied.textContent = tirer(pied.textContent || '');
+
+      // La phrase de l'étoile est tirée une seule fois par chargement de page :
+      // elle reste la même tant que la page n'est pas rafraîchie.
+      const etoile = document.getElementById('etoile');
+      const cachee = document.getElementById('phrase-cachee');
+      if (cachee && phrases.length > 0) cachee.textContent = tirer(pied?.textContent || '');
+      let minuteur: number | undefined;
+      const montrer = (duree: number) => {
+        if (!cachee || phrases.length === 0) return;
+        cachee.hidden = false;
+        window.clearTimeout(minuteur);
+        minuteur = window.setTimeout(() => (cachee.hidden = true), duree);
+      };
+      etoile?.addEventListener('click', () => montrer(7000));
+      etoile?.addEventListener('mouseenter', () => montrer(7000));
+      etoile?.addEventListener('focus', () => montrer(7000));
+      etoile?.addEventListener('mouseleave', () => montrer(1200));
+
+      // Texte défilant : bouton pause
+      const ticker = document.querySelector('.ticker');
+      const pause = document.querySelector('.ticker-pause');
+      pause?.addEventListener('click', () => {
+        const arret = ticker?.classList.toggle('ticker-arret') ?? false;
+        pause.setAttribute('aria-pressed', String(arret));
+        pause.setAttribute('aria-label', arret ? 'Relancer le texte défilant' : 'Mettre en pause le texte défilant');
+        pause.textContent = arret ? '▶' : '❚❚';
+      });
+    </script>
+  </body>
+</html>

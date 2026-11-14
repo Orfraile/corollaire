@@ -1,0 +1,16 @@
+---
+// Un petit bouton 88x31 comme sur le web d'autrefois.
+// teinte : paon, pervenche, herbe, lavande
+// curseur : "fleur" pour que le curseur devienne un œillet au survol
+// uniforme : les deux lignes ont la même (petite) taille de police
+const { href, haut, bas = '', teinte = 'paon', curseur, uniforme = false } = Astro.props;
+const Balise = href ? 'a' : 'span';
+---
+
+<Balise
+  class:list={['b88', `b88-${teinte}`, curseur && `b88-curseur-${curseur}`, uniforme && 'b88-uniforme']}
+  href={href}
+>
+  <span class="b88-haut">{haut}</span>
+  {bas && <span class="b88-bas">{bas}</span>}
+</Balise>

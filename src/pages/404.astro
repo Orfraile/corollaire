@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base titre="Page introuvable" barreTitre="Erreur">
+  <h1>Page introuvable</h1>
+  <p>Vous avez dû vous tromper de couloir. Cette page n'existe pas, ou n'existe plus.</p>
+  <p><em>Parfois, une porte ouverte ne donne sur rien.</em></p>
+  <p><a href={url('/')}>Retourner à l'accueil</a> · <a href={url('/recherche/')}>Chercher un article</a></p>
+</Base>

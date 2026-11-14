@@ -1,0 +1,24 @@
+# ============================================================
+#  Les phrases cachées de Corollaire
+#  Écris une phrase par ligne. Elles apparaissent au hasard :
+#  - dans la barre du pied de page (une nouvelle à chaque visite) ;
+#  - quand on clique sur la petite étoile ✦ en haut de la page.
+#  Les lignes qui commencent par # (comme celle-ci) sont ignorées.
+#  Ajoute, modifie ou supprime des lignes comme tu veux.
+# ============================================================
+
+Vous êtes déjà venu ici. Ou peut-être pas.
+Le ciel est resté bleu, par politesse.
+Veuillez patienter : quelqu'un arrive peut-être.
+Il reste de la place dans la pièce d'à côté.
+Fichier introuvable : l'été 2003.
+Votre session a été enregistrée quelque part.
+Les couloirs sont plus longs la nuit.
+Ne pas éteindre l'ordinateur pendant la mise à jour du souvenir.
+Le sablier tourne encore, mais plus pour vous.
+Quelqu'un a laissé la fenêtre ouverte.
+Il est toujours quatre heures de l'après-midi quelque part.
+Appuyez sur une touche pour continuer à rêver.
+Cette page a été vue par personne, et par tout le monde.
+La pelouse est plus verte que dans vos souvenirs.
+Rappel : vous êtes bien ici.

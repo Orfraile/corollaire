@@ -1,0 +1,166 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import boite from '../assets/boite-aux-lettres.webp';
+import maisonBrut from '../data/maison.txt?raw';
+
+// Une page par fichier de src/content/pages/ : À propos, Contact, Mentions légales…
+export async function getStaticPaths() {
+  const pages = await getCollection('pages');
+  return pages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const echos = maisonBrut
+  .split(/\r?\n/)
+  .map((l) => l.trim())
+  .filter((l) => l && !l.startsWith('#'));
+const echosJson = JSON.stringify(echos).replace(/</g, '\\u003c');
+---
+
+<Base titre={entry.data.titre} description={entry.data.description} barreTitre={`${entry.id}.txt`} classePage={`page-${entry.id}`}>
+  <article class="page" style={`--image-boite: url("${boite.src}")`}>
+    <!-- Filtre utilisé par l'effet de déformation de la page « Mentions légales » -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <filter id="deformation" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="turbulence" baseFrequency="0.012 0.045" numOctaves="2" seed="4" result="bruit" />
+        <feDisplacementMap in="SourceGraphic" in2="bruit" scale="5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+    <h1>{entry.data.titre}</h1>
+    <div class="texte">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+{
+  entry.id === 'mentions-legales' && (
+    <script id="phrases-maison" type="application/json" is:inline set:html={echosJson} />
+  )
+}
+
+<script>
+  const survol = window.matchMedia('(hover: hover)').matches;
+  const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function choisir(liste: string[]) {
+    return liste[Math.floor(Math.random() * liste.length)];
+  }
+
+  // Coupe tout le texte d'un bloc en mots, puis en lettres (chaque lettre reçoit un petit décalage au hasard)
+  function decouperEnLettres(racine: HTMLElement) {
+    const marcheur = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT);
+    const noeuds: Text[] = [];
+    while (marcheur.nextNode()) noeuds.push(marcheur.currentNode as Text);
+    for (const noeud of noeuds) {
+      const texte = noeud.textContent ?? '';
+      if (!texte.trim()) continue;
+      const morceau = document.createDocumentFragment();
+      for (const partie of texte.split(/(\s+)/)) {
+        if (!partie) continue;
+        if (/^\s+$/.test(partie)) {
+          morceau.appendChild(document.createTextNode(partie));
+          continue;
+        }
+        const mot = document.createElement('span');
+        mot.className = 'mot';
+        for (const caractere of partie) {
+          const lettre = document.createElement('span');
+          lettre.className = 'lettre';
+          lettre.textContent = caractere;
+          lettre.style.setProperty('--dx', (Math.random() * 0.7 - 0.35).toFixed(2) + 'em');
+          lettre.style.setProperty('--dy', (Math.random() * 0.4 - 0.2).toFixed(2) + 'em');
+          lettre.style.setProperty('--rot', (Math.random() * 16 - 8).toFixed(1) + 'deg');
+          mot.appendChild(lettre);
+        }
+        morceau.appendChild(mot);
+      }
+      noeud.replaceWith(morceau);
+    }
+  }
+
+  if (survol) {
+    // ----- Infolettre : les lettres se déplacent, se chevauchent, se désalignent -----
+    const infolettre = document.querySelector<HTMLElement>('.mention-infolettre');
+    if (infolettre) {
+      let decoupe = false;
+      infolettre.addEventListener('mouseenter', () => {
+        if (!decoupe) {
+          decouperEnLettres(infolettre);
+          decoupe = true;
+        }
+        requestAnimationFrame(() => infolettre.classList.add('brouille'));
+      });
+      infolettre.addEventListener('mouseleave', () => infolettre.classList.remove('brouille'));
+    }
+
+    // ----- Propriété intellectuelle : texte qui glitche (style Zalgo), puis un écho -----
+    const propriete = document.querySelector<HTMLElement>('.mention-propriete');
+    if (propriete) {
+      const noeuds: { n: Text; o: string }[] = [];
+      const marcheur = document.createTreeWalker(propriete, NodeFilter.SHOW_TEXT);
+      while (marcheur.nextNode()) {
+        const n = marcheur.currentNode as Text;
+        if (n.textContent && n.textContent.trim()) noeuds.push({ n, o: n.textContent });
+      }
+      const HAUT = ['\u0300', '\u0301', '\u0302', '\u0303', '\u0306', '\u0307', '\u0308', '\u030a', '\u030b', '\u030c', '\u0312', '\u0315'];
+      const BAS = ['\u0316', '\u0317', '\u0323', '\u0324', '\u0325', '\u032d', '\u0331'];
+      const abimer = (t: string) => {
+        let s = '';
+        for (const c of t) {
+          s += c;
+          if (/\p{L}/u.test(c) && Math.random() < 0.1) {
+            s += choisir(HAUT);
+            if (Math.random() < 0.2) s += choisir(BAS);
+          }
+        }
+        return s;
+      };
+      const appliquer = () => noeuds.forEach(({ n, o }) => (n.textContent = abimer(o)));
+      const restaurer = () => noeuds.forEach(({ n, o }) => (n.textContent = o));
+
+      let echos: string[] = [];
+      try {
+        echos = JSON.parse(document.getElementById('phrases-maison')?.textContent || '[]');
+      } catch (e) {}
+      let echo: HTMLElement | null = null;
+      const montrerEcho = () => {
+        if (echos.length === 0) return;
+        if (!echo) {
+          echo = document.createElement('p');
+          echo.className = 'echo-maison';
+          echo.setAttribute('aria-hidden', 'true');
+          propriete.appendChild(echo);
+        }
+        echo.textContent = '';
+        for (const partie of choisir(echos).split(/(maison)/i)) {
+          if (/^maison$/i.test(partie)) {
+            const bleu = document.createElement('span');
+            bleu.className = 'maison-bleue';
+            bleu.textContent = partie;
+            echo.appendChild(bleu);
+          } else {
+            echo.appendChild(document.createTextNode(partie));
+          }
+        }
+        requestAnimationFrame(() => echo?.classList.add('visible'));
+      };
+
+      let boucle: number | undefined;
+      let attente: number | undefined;
+      propriete.addEventListener('mouseenter', () => {
+        appliquer();
+        if (!mouvementReduit) boucle = window.setInterval(appliquer, 280);
+        attente = window.setTimeout(montrerEcho, 1600);
+      });
+      propriete.addEventListener('mouseleave', () => {
+        window.clearInterval(boucle);
+        window.clearTimeout(attente);
+        restaurer();
+        echo?.classList.remove('visible');
+      });
+    }
+  }
+</script>

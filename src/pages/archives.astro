@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import { getArticles, formatDateCourte } from '../lib/articles';
+import { url } from '../lib/url';
+
+const articles = await getArticles();
+const parAnnee = new Map<number, typeof articles>();
+for (const a of articles) {
+  const y = a.data.date.getUTCFullYear();
+  if (!parAnnee.has(y)) parAnnee.set(y, []);
+  parAnnee.get(y)!.push(a);
+}
+---
+
+<Base titre="Archives">
+  <h1>Archives</h1>
+  {articles.length === 0 && <p>Aucun article pour le moment.</p>}
+  {
+    [...parAnnee.entries()].map(([annee, liste]) => (
+      <section>
+        <h2>{annee}</h2>
+        <ul class="liste-archives">
+          {liste.map((a) => (
+            <li>
+              <span class="compte">{formatDateCourte(a.data.date)}</span>
+              <a href={url(`/articles/${a.id}/`)}>{a.data.titre}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</Base>

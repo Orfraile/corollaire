@@ -1,0 +1,73 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../lib/url';
+
+interface Props {
+  articles: CollectionEntry<'articles'>[];
+  currentId?: string;
+}
+const { articles, currentId } = Astro.props;
+
+// Regroupe les articles par année, puis par mois (les articles arrivent déjà triés).
+const annees = new Map<number, Map<number, CollectionEntry<'articles'>[]>>();
+for (const a of articles) {
+  const y = a.data.date.getUTCFullYear();
+  const m = a.data.date.getUTCMonth();
+  if (!annees.has(y)) annees.set(y, new Map());
+  const mois = annees.get(y)!;
+  if (!mois.has(m)) mois.set(m, []);
+  mois.get(m)!.push(a);
+}
+
+function nomDuMois(y: number, m: number) {
+  return new Date(Date.UTC(y, m, 1)).toLocaleDateString('fr-FR', { month: 'long', timeZone: 'UTC' });
+}
+function contientCourant(liste: CollectionEntry<'articles'>[]) {
+  return currentId !== undefined && liste.some((a) => a.id === currentId);
+}
+
+const listeAnnees = [...annees.entries()];
+---
+
+<nav class="archives" aria-label="Archives">
+  <ul>
+    {
+      listeAnnees.map(([y, mois], i) => {
+        const tousDeLAnnee = [...mois.values()].flat();
+        const ouvertAnnee = contientCourant(tousDeLAnnee) || (currentId === undefined && i === 0);
+        return (
+          <li>
+            <details open={ouvertAnnee}>
+              <summary>
+                {y} <span class="compte">({tousDeLAnnee.length})</span>
+              </summary>
+              <ul>
+                {[...mois.entries()].map(([m, liste], j) => (
+                  <li>
+                    <details open={contientCourant(liste) || (currentId === undefined && i === 0 && j === 0)}>
+                      <summary class="mois">
+                        {nomDuMois(y, m)} <span class="compte">({liste.length})</span>
+                      </summary>
+                      <ul>
+                        {liste.map((a) => (
+                          <li>
+                            <a
+                              href={url(`/articles/${a.id}/`)}
+                              aria-current={a.id === currentId ? 'page' : undefined}
+                            >
+                              {a.data.titre}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

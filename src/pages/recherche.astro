@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base titre="Recherche" description="Rechercher dans tous les articles de Corollaire.">
+  <h1>Recherche</h1>
+
+  <link rel="stylesheet" href={url('/pagefind/pagefind-ui.css')} />
+  <div id="recherche"></div>
+  <p id="recherche-absente" hidden>
+    La recherche n'est pas disponible ici : elle ne fonctionne qu'après avoir construit le site
+    (commandes <code>npm run build</code> puis <code>npm run preview</code>), et sur le site en ligne.
+  </p>
+
+  <script is:inline src={url('/pagefind/pagefind-ui.js')}></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (typeof PagefindUI === 'undefined') {
+        document.getElementById('recherche-absente').hidden = false;
+        return;
+      }
+      new PagefindUI({ element: '#recherche', showImages: false, showSubResults: false });
+    });
+  </script>
+</Base>
