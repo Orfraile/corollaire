@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist --force-language fr",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "publier": "git add -A && git commit -m maj && git push"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
