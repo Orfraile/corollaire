@@ -5,6 +5,7 @@ import '../styles/theme.css';
 import ciel from '../assets/ciel.webp';
 import Archives from '../components/Archives.astro';
 import Fenetre from '../components/Fenetre.astro';
+import Infolettre from '../components/Infolettre.astro';
 import Bouton88 from '../components/Bouton88.astro';
 import phrasesBrut from '../data/phrases.txt?raw';
 import { getArticles } from '../lib/articles';
@@ -85,6 +86,9 @@ const annee = new Date().getFullYear();
       <aside id="sommaire" class="sidebar" aria-label="Sommaire">
         <Fenetre titre="Archives">
           <Archives articles={articles} currentId={currentId} />
+        </Fenetre>
+        <Fenetre titre="Infolettre">
+          <Infolettre suffixe="cote" />
         </Fenetre>
         <Fenetre titre="Navigation">
           <nav class="navigation-lateral" aria-label="Navigation">

@@ -8,7 +8,6 @@ couverture: ./couverture.jpg
 couvertureAlt: "Un ciel pâle au-dessus d'une pelouse"
 ---
 
-*Ceci est un article d'exemple. Tu pourras le supprimer quand tu voudras.*
 
 Le matin où le ciel s'est arrêté, personne ne l'a remarqué tout de suite. Les nuages étaient là, bien rangés, un peu trop bleus, comme sur une image qu'on aurait collée au-dessus de la ville.
 

@@ -4,6 +4,8 @@ import Base from '../../layouts/Base.astro';
 import TagList from '../../components/TagList.astro';
 import Media from '../../components/Media.astro';
 import Galerie from '../../components/Galerie.astro';
+import Fenetre from '../../components/Fenetre.astro';
+import Infolettre from '../../components/Infolettre.astro';
 import { getArticles, typeLabels, formatDate, extensions } from '../../lib/articles';
 import { url } from '../../lib/url';
 
@@ -45,5 +47,11 @@ const liens = [d.lien, ...d.liens].filter((l): l is string => Boolean(l));
         </div>
       )
     }
+
+    <div class="infolettre-article">
+      <Fenetre titre="Recevoir les nouveaux textes">
+        <Infolettre suffixe="bas" />
+      </Fenetre>
+    </div>
   </article>
 </Base>

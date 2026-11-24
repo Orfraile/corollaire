@@ -1,0 +1,76 @@
+---
+// Inscription à l'infolettre (service Brevo).
+// Rien n'est chargé depuis Brevo avant le clic sur « S'abonner ».
+import { BREVO_FORMULAIRE, BREVO_HAUTEUR } from '../lib/config';
+import { url } from '../lib/url';
+
+let adresse = BREVO_FORMULAIRE.trim();
+// Si tout le code <iframe …> a été collé, on récupère juste l'adresse src="…"
+const iframe = adresse.match(/src=["']([^"']+)["']/i);
+if (iframe) adresse = iframe[1];
+const actif = /^https:\/\//i.test(adresse);
+---
+
+<p class="infolettre-intro">Recevez les nouveaux textes par e-mail, envoyés à la main, sans rythme fixe.</p>
+
+{
+  actif ? (
+    <div class="infolettre" data-embed={adresse} data-hauteur={BREVO_HAUTEUR}>
+      <button type="button" class="bouton infolettre-ouvrir" data-abonnement>
+        S'abonner
+      </button>
+      <p class="infolettre-note">
+        Le formulaire est fourni par Brevo et ne se charge qu'après votre clic. Un message de confirmation vous sera
+        envoyé, et vous pourrez vous désabonner à tout moment. <a href={url('/mentions-legales/')}>En savoir plus</a>.
+      </p>
+
+      <dialog class="infolettre-dialogue" aria-label="Inscription à l'infolettre">
+        <div class="fenetre">
+          <div class="fenetre-barre">
+            <p class="fenetre-nom">Infolettre</p>
+            <button type="button" class="bouton infolettre-fermer">Fermer</button>
+          </div>
+          <div class="fenetre-corps">
+            <div class="infolettre-cadre" />
+          </div>
+        </div>
+      </dialog>
+    </div>
+  ) : (
+    <p class="infolettre-note">Le formulaire d'inscription arrive bientôt.</p>
+  )
+}
+
+<p class="infolettre-rss"><a href={url('/rss.xml')} data-abonnement>Ou suivre par flux RSS</a></p>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const cible = e.target as HTMLElement;
+
+    const ouvrir = cible.closest('.infolettre-ouvrir');
+    if (ouvrir) {
+      const racine = ouvrir.closest<HTMLElement>('.infolettre');
+      const fenetre = racine?.querySelector<HTMLDialogElement>('dialog');
+      const cadre = racine?.querySelector<HTMLElement>('.infolettre-cadre');
+      if (!racine || !fenetre || !cadre) return;
+      if (!cadre.querySelector('iframe') && racine.dataset.embed) {
+        const f = document.createElement('iframe');
+        f.src = racine.dataset.embed;
+        f.title = "Formulaire d'inscription à l'infolettre";
+        f.style.height = (racine.dataset.hauteur || '480') + 'px';
+        f.referrerPolicy = 'strict-origin-when-cross-origin';
+        cadre.replaceChildren(f);
+      }
+      fenetre.showModal();
+      return;
+    }
+
+    if (cible.closest('.infolettre-fermer')) {
+      cible.closest<HTMLDialogElement>('dialog')?.close();
+      return;
+    }
+
+    // un clic à côté de la fenêtre la ferme
+    if (cible instanceof HTMLDialogElement && cible.classList.contains('infolettre-dialogue')) cible.close();
+  });
+</script>

@@ -698,3 +698,30 @@ dialog.visionneuse::backdrop { background: rgba(5, 8, 19, 0.88); }
 
 /* Images placées dans le texte d'un article */
 .texte img { max-width: 100%; height: auto; }
+
+
+/* ============================================================
+   ÉTAPE 10 : inscription à l'infolettre (Brevo, chargé au clic)
+   ============================================================ */
+.bouton { cursor: var(--curseur-lien); }
+.infolettre { display: grid; gap: 0.5rem; justify-items: start; }
+.infolettre .bouton { font-family: var(--police-pixel); font-size: 1.4rem; padding: 0.15rem 1.2rem; }
+.infolettre-intro { margin: 0 0 0.6rem; font-size: 0.95rem; }
+.infolettre-note { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--texte-doux); }
+.infolettre-rss { margin: 0.6rem 0 0; font-size: 0.9rem; }
+.infolettre-article { margin-top: 2.5rem; }
+
+dialog.infolettre-dialogue {
+  width: 100%;
+  max-width: min(96vw, 36rem);
+  max-height: 96vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--texte);
+  overflow: auto;
+}
+dialog.infolettre-dialogue::backdrop { background: rgba(5, 8, 19, 0.88); }
+.infolettre-dialogue .fenetre-nom { margin: 0; font-size: 1.5rem; color: #fff; }
+.infolettre-cadre { min-height: 4rem; }
+.infolettre-cadre iframe { display: block; width: 100%; border: 0; background: var(--papier); }

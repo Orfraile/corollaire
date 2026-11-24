@@ -41,9 +41,9 @@ San Francisco, CA 94107<br />
 
 ## Infolettre
 
-L'inscription à l'infolettre passe par le service Buttondown ([buttondown.com](https://buttondown.com)). L'adresse e-mail saisie lui est confiée, et n'est utilisée que pour envoyer les nouveaux articles. Chaque message contient un lien de désinscription. Pour demander la suppression de votre adresse, vous pouvez aussi écrire à l'adresse de contact ci-dessus.
+L'inscription à l'infolettre passe par le service Brevo ([brevo.com](https://www.brevo.com)). Le formulaire d'inscription est fourni par Brevo : il ne se charge qu'après un clic de votre part, et ce service peut alors déposer des cookies, selon ses propres règles. L'adresse e-mail saisie lui est confiée et conservée jusqu'à votre désinscription. Elle n'est utilisée que pour vous envoyer les nouveaux textes du blog, envoyés manuellement. L'inscription demande une confirmation par e-mail, et chaque message contient un lien de désinscription. Pour demander la suppression de votre adresse, vous pouvez aussi écrire à l'adresse de contact ci-dessus. Pour en savoir plus sur le traitement des données par ce service, consultez sa politique de confidentialité (lien en bas de la page brevo.com).
 
-<!-- À COMPLÉTER à l'étape « Infolettre » avec les informations légales publiées par Buttondown. -->
+<!-- À COMPLÉTER à l'étape « Infolettre » avec les informations légales publiées par Brevo (mentions légales en bas de brevo.com). -->
 
 </section>
 
